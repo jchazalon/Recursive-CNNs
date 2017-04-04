@@ -4,10 +4,11 @@ import tensorflow as tf
 import utils
 import os
 import math
+import sys 
 
 BATCH_SIZE = 100
 NO_OF_STEPS = 500000
-CHECKPOINT_DIR = "../corner_withoutbg1all"
+CHECKPOINT_DIR = "../corner_withoutbg"+str(sys.argv[1])+"all"
 DATA_DIR = "../../corner_data"
 if (not os.path.isdir(CHECKPOINT_DIR)):
     os.mkdir(CHECKPOINT_DIR)
@@ -17,33 +18,10 @@ TEST_PERCENTAGE = .10
 Debug = True
 size= (32,32)
 
-# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=size, remove_background =1)
-# image_list, gt_list = utils.unison_shuffled_copies(image_list, gt_list)
-
-
-# print len(image_list)
-
-
-# if (Debug):
-#     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
-# train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-
-# train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-# if (Debug):
-#     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
-#     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
-
-# np.save("train_gt_corner_bg1", train_gt)
-# np.save("train_image_bg1", train_image)
-# np.save("validate_gt_bg1", validate_gt)
-# np.save("validate_image_bg1", validate_image)
-# 0/0
-train_gt = np.load("../train_gt_corners_all.npy")
-train_image = np.load("../train_image_corners_all.npy")
-validate_gt = np.load("../validate_gt_corners_all.npy")
-validate_image = np.load("../validate_image_corners_all.npy")
+train_gt = np.load("../train_gt_corners_bg"+str(sys.argv[1])+".npy")
+train_image = np.load("../train_image_corners_bg"+str(sys.argv[1])+".npy")
+validate_gt = np.load("../validate_gt_corners_bg"+str(sys.argv[1])+".npy")
+validate_image = np.load("../validate_image_corners_bg"+str(sys.argv[1])+".npy")
 
 
 utils.validate_gt(validate_gt, size)
@@ -58,37 +36,9 @@ print mean_train.shape
 train_image = train_image - mean_train
 validate_image = validate_image - mean_train
 
-# rand_list = np.random.randint(0, len(validate_image) - 1, 10)
-# batch = validate_image[rand_list]
-# gt = validate_gt[rand_list]
 
-
-# image_list, gt_list, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=(32, 32))
-# print len(image_list)
-
-# utils.validate_gt(gt_list, (32,32))
-# if (Debug):
-#     print ("(Image_list_len, gt_list_len)", (len(image_list), len(gt_list)))
-# train_image = image_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_image = image_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-
-# train_gt = gt_list[0:max(1, int(len(image_list) * (1 - VALIDATION_PERCENTAGE)))]
-# validate_gt = gt_list[int(len(image_list) * (1 - VALIDATION_PERCENTAGE)):len(image_list) - 1]
-# if (Debug):
-#     print ("(Train_Image_len, Train_gt_len)", (len(train_image), len(train_gt)))
-#     print ("(Validate_Image_len, Validate_gt_len)", (len(validate_image), len(validate_gt)))
-
-# rand_list = np.random.randint(0, len(validate_image) - 1, 10)
-# batch = validate_image[rand_list]
-# gt = validate_gt[rand_list]
-# for g, b in zip(gt, batch):
-#     img = b
-#     cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
-#     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
-
-# In[ ]:
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.1
+config.gpu_options.per_process_gpu_memory_fraction = 0.07
 
 sess = tf.InteractiveSession(config = config)
 
@@ -195,7 +145,7 @@ with tf.variable_scope('Corner'):
     cross_entropy = tf.nn.l2_loss(y_conv - y_)
 
     mySum = tf.summary.scalar('loss', cross_entropy)
-    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 

@@ -7,7 +7,7 @@ import math
 
 BATCH_SIZE = 10
 NO_OF_STEPS = 1000000000
-CHECKPOINT_DIR = "../4PointAllBg"
+CHECKPOINT_DIR = "../4Pointbg5"
 DATA_DIR = "../../4pointdataw4"
 DATA_DIR2= "../..//DataGenerator/multipleBackgrounds"
 if (not os.path.isdir(CHECKPOINT_DIR)):
@@ -22,10 +22,10 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.3
 size = (32,32)
 
 
-train_gt = np.load("../train_gt_all_bg.npy")
-train_image = np.load("../train_image_all_bg.npy")
-validate_gt = np.load("../validate_gt_all_bg.npy")
-validate_image = np.load("../validate_image_all_bg.npy")
+train_gt = np.load("../train_gt_bg5.npy")
+train_image = np.load("../train_image_bg5.npy")
+validate_gt = np.load("../validate_gt_bg5.npy")
+validate_image = np.load("../validate_image_bg5.npy")
 rand_list = np.random.randint(0, len(validate_image) - 1, 10)
 batch = validate_image[rand_list]
 
@@ -43,11 +43,13 @@ print np.mean(train_image, axis=(0,1,2))
 gt = validate_gt[rand_list]
 # for g, b in zip(gt, batch):
 #     img = b
-#     cv2.circle(img, (g[0], g[1]), 2, (255, 0, 0), 4)
+#     cv2.circle(img, (g[0], g[1]), 2, (255# 0, 0), 4)
 #     cv2.imwrite("../" + str(g[0] + g[1]) + ".jpg", img)
 
-
-sess = tf.InteractiveSession(config=config)
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+sess = tf.Session(config=config)
+# sess = tf.InteractiveSession(config=config)
 
 
 # In[ ]:
@@ -173,16 +175,12 @@ with tf.name_scope("FCLayers"):
 
 with tf.name_scope("loss"):
     cross_entropy = tf.nn.l2_loss(y_conv - y_)
-
-    mySum = tf.summary.scalar('Train_loss', cross_entropy)
     validate_loss = tf.summary.scalar('Validate_loss', cross_entropy)
 with tf.name_scope("Train"):
     train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
 
 
-merged = tf.summary.merge_all()
 
-train_writer = tf.summary.FileWriter('../train', sess.graph)
 
 # In[ ]:
 
@@ -191,60 +189,62 @@ ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
 if ckpt and ckpt.model_checkpoint_path:
     print ("PRINTING CHECKPOINT PATH")
     print(ckpt.model_checkpoint_path)
+    # raw_input("sd")
     init = saver.restore(sess, ckpt.model_checkpoint_path)
 
 else:
     print("Starting from scratch")
     init = tf.global_variables_initializer()
+    # raw_input("asdas")
     sess.run(init)
 
-for i in range(NO_OF_STEPS):
-    rand_list = np.random.randint(0, len(train_image) - 1, BATCH_SIZE)
-    batch = train_image[rand_list]
-    gt = train_gt[rand_list]
-    
-    if i % 1000== 0:
-        loss_mine = cross_entropy.eval(feed_dict={
-            x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
-        print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
-        summary = mySum.eval(feed_dict={
-            x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
-        train_writer.add_summary(summary, i)
+with sess.as_default():
+    for i in range(NO_OF_STEPS):
+        rand_list = np.random.randint(0, len(train_image) - 1, BATCH_SIZE)
+        batch = train_image[rand_list]
+        gt = train_gt[rand_list]
+        if i % 1000== 0:
+            loss_mine = cross_entropy.eval(feed_dict={
+                x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
+            print("Loss on Train : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
+            summary = mySum.eval(feed_dict={
+                x: train_image[0:BATCH_SIZE], y_: train_gt[0:BATCH_SIZE], keep_prob: 1.0})
+            
 
-        rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
-        batch = validate_image[rand_list]
-        gt = validate_gt[rand_list]
-        loss_mine = cross_entropy.eval(feed_dict={
-            x: batch, y_: gt, keep_prob: 1.0})
-        print("Loss on Val : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
-        val_sum = validate_loss.eval(feed_dict={
-            x: batch, y_: gt, keep_prob: 1.0})
-        train_writer.add_summary(val_sum, i)
-        temp_temp = np.random.randint(0,len(validate_image)-1,1)
-        batch = validate_image[temp_temp]
-        gt = validate_gt[temp_temp]
-        response = y_conv.eval(feed_dict={
-            x: batch, y_: gt, keep_prob: 1.0})
-        cv2.circle(batch[0], (response[0][0], response[0][1]), 2, (255,0,0),2)
-        cv2.circle(batch[0], (gt[0][0], gt[0][1]), 2, (0,255,255),2)
+            rand_list = np.random.randint(0, len(validate_image) - 1, BATCH_SIZE)
+            batch = validate_image[rand_list]
+            gt = validate_gt[rand_list]
+            loss_mine = cross_entropy.eval(feed_dict={
+                x: batch, y_: gt, keep_prob: 1.0})
+            print("Loss on Val : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
+            val_sum = validate_loss.eval(feed_dict={
+                x: batch, y_: gt, keep_prob: 1.0})
+            
+            temp_temp = np.random.randint(0,len(validate_image)-1,1)
+            batch = validate_image[temp_temp]
+            gt = validate_gt[temp_temp]
+            response = y_conv.eval(feed_dict={
+                x: batch, y_: gt, keep_prob: 1.0})
+            cv2.circle(batch[0], (response[0][0], response[0][1]), 2, (255,0,0),2)
+            cv2.circle(batch[0], (gt[0][0], gt[0][1]), 2, (0,255,255),2)
 
-        cv2.circle(batch[0], (response[0][2], response[0][3]), 2, (0,255,0),2)
-        cv2.circle(batch[0], (gt[0][2], gt[0][3]), 2, (0,255,255),2)
+            cv2.circle(batch[0], (response[0][2], response[0][3]), 2, (0,255,0),2)
+            cv2.circle(batch[0], (gt[0][2], gt[0][3]), 2, (0,255,255),2)
 
-        cv2.circle(batch[0], (response[0][4], response[0][5]), 2, (0,0,255),2)
-        cv2.circle(batch[0], (gt[0][4], gt[0][5]), 2, (0,255,255),2)
+            cv2.circle(batch[0], (response[0][4], response[0][5]), 2, (0,0,255),2)
+            cv2.circle(batch[0], (gt[0][4], gt[0][5]), 2, (0,255,255),2)
 
-        cv2.circle(batch[0], (response[0][6], response[0][7]), 2, (255,255,0),2)
-        cv2.circle(batch[0], (gt[0][6], gt[0][7]), 2, (0,255,255),2)
+            cv2.circle(batch[0], (response[0][6], response[0][7]), 2, (255,255,0),2)
+            cv2.circle(batch[0], (gt[0][6], gt[0][7]), 2, (0,255,255),2)
 
-        img = batch[0]
-        img = cv2.resize(img, (320,320))
-        cv2.imwrite("../temp"+str(temp_temp)+".jpg", img)
-    if i % 500000== 0 and i != 0:
-        saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
-    else:
-        a, summary = sess.run([train_step, mySum], feed_dict={x: batch, y_: gt, keep_prob: 1.0})
-        
+            img = batch[0]
+            img = cv2.resize(img, (320,320))
+            cv2.imwrite("../temp"+str(temp_temp)+".jpg", img)
+        if i % 10000== 0 and i != 0:
+            saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
+        else:
+            a= sess.run([train_step], feed_dict={x: batch, y_: gt, keep_prob: 1.0})
+            
 
 
 

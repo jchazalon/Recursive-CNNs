@@ -7,18 +7,19 @@ import numpy as np
 import corner_refinement
 import getcorners
 import tensorflow as tf
-
+import utils
 import random
-
+import sys 
 if __name__ == '__main__':
     tf.reset_default_graph()
 
     
     
-    corner_e=getcorners.get_corners_moreBG()
+    corner_e=getcorners.get_corners_moreBG(model=str(sys.argv[2]))
     #corner_e = getcorners.get_corners_aug()   
-    model = corner_refinement.corner_finder_aug()
-    dir = "/home/khurram/Dicta_data/temp"
+    # model = corner_refinement.corner_finder_aug()
+    model = corner_refinement.corner_finder_newBG(model=str(sys.argv[2]))
+    dir = "/home/khurram/Dicta_data/"+sys.argv[1]
     import csv
     ans = []
     ans2 = []
@@ -111,9 +112,7 @@ if __name__ == '__main__':
                                     import timeit
                                     print "Gets here"
                                     
-                                    #temp = np.array(model1.get_location((data[0][0], data[1][0], data[2][0], data[3][0])))
-                                   # print temp.shape
-                                    #print temp
+                                
 
                                     for b in data:
                                         a = b[0]
@@ -126,33 +125,21 @@ if __name__ == '__main__':
 
                                     end = time.clock()
                                     print "TOTAL TIME : ", end - start
-                                    # for a in range(0, len(data)):
-                                    #     cv2.line(img, tuple(corner_address[a % 4]), tuple(corner_address[(a + 1) % 4]),
-                                    #              (255, 0, 0), 2)
-                                    #cv2.fillConvexPoly(img,np.array(corner_address),(255,0,0))
-                                    #cv2.imwrite("../result1.jpg", img)
-
-
-                                    #spamwriter.writerow((folder + file + image + ".jpg", np.array(corner_address))
-                                    #spamwriter.writerow((folder + file + image + ".jpg", myGt))
-
-                                    #print myGt
-                                   # print np.array(corner_address)
-                                    import utils
-                                  #  r = utils.intersection(myGt, np.array(corner_address),img)
-				    r2 = utils.intersection_with_corection(myGt, np.array(corner_address),img)
+                                    r2 = utils.intersection_with_corection(myGt, np.array(corner_address),img)
 			         #   if r2>r:
 				#	print "Good scene"
 				 #   else:
 				#	print "Bad scene"
                                     spamwriter.writerow((images_dir + "/" + image, np.array((tl, tr, br, bl)),np.array(corner_address),r2))
-                                    #if r <0.7:
-                                     #   cv2.imwrite("../"+image, img)
-                                    #if r<1 and r>0:
-                                    #    ans.append(r)
+                                            #if r <0.7:
+                                             #   cv2.imwrite("../"+image, img)
+                                            #if r<1 and r>0:
+                                            #    ans.append(r)
                                     if r2<1 and r2>0:
-					ans2.append(r2)
-				    print "MEAN CORRECTED: ", np.mean(np.array(ans2))
+                                        ans2.append(r2)
+                                        if(r2<.7):
+                                            cv2.imwrite("../"+image, img)
+                                        print "MEAN CORRECTED: ", np.mean(np.array(ans2))
                                     #print "MEAN OLD : ", np.mean(np.array(ans))
     print np.mean(np.array(ans2))
 

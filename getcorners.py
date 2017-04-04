@@ -824,24 +824,21 @@ class get_corners_aug:
 
 
 class get_corners_moreBG:
-    def __init__(self):
+    def __init__(self, model="5"):
         BATCH_SIZE = 1
         NO_OF_STEPS = 50000
-        CHECKPOINT_DIR = "../4PointAllBg"
-        DATA_DIR = "../../DataSet Generator/data_set"
-        GT_DIR = "../../DataSet Generator/Untitled Folder/gt1.csv"
-        VALIDATION_PERCENTAGE = .20
-        TEST_PERCENTAGE = .10
+        CHECKPOINT_DIR = "../4Pointbg"+model
+       
         Debug = True
 
         # img = cv2.imread("../temp/044.jpg")
         # img = cv2.resize(img, (800,800))
 
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.1
+        config.gpu_options.per_process_gpu_memory_fraction = 0.05
         self.sess = tf.Session(config=config)
         sess = self.sess
-        train_image = np.load("../train_image_all_bg.npy")
+        train_image = np.load("../train_image_bg"+model+".npy")
         mean_train = np.mean(train_image, axis=(0,1,2))
 
         mean_train = np.expand_dims(mean_train, axis=0)
@@ -1005,7 +1002,7 @@ class get_corners_moreBG:
         start = timeit.timeit()
         myImage = np.copy(o_img)
 
-        CROP_FRAC = .95
+        CROP_FRAC = .85
        #print myImage.shape
 
         img_temp = cv2.resize(myImage, (32, 32))
