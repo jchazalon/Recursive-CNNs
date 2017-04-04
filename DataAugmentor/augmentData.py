@@ -3,11 +3,11 @@ import numpy as np
 import cv2
 import csv
 import utils
-output_dir = "multipleBackgrounds"
+output_dir = "/home/khurram/DataGenerator/multipleBackgroundsNew"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
-dir = "../data1"
+dir = "/home/khurram/DataGenerator/dataNew"
 import csv
 
 with open(output_dir+"/gt.csv", 'a') as csvfile:
@@ -42,6 +42,7 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                             gt_crop = np.array(gt_crop)
 
                             gt_crop = gt_crop*(300.0 / mah_size[1],300.0 / mah_size[0])
+			    gt_crop = gt_crop.astype(int)
 
                             # for a in range(0,4):
                             no=0
@@ -51,7 +52,7 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                             # cv2.imwrite("asda.jpg", img)
                             # 0/0
                             cv2.imwrite(output_dir + "/" +str(angle)+str(random_crop)+ image, img_crop)
-                            spamwriter_1.writerow((str(angle)+str(random_crop)+ image, gt_crop))
+                            spamwriter_1.writerow((str(angle)+str(random_crop)+ image, (gt_crop[0],gt_crop[1],gt_crop[2], gt_crop[3])))
 
                             # clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
                             # cl1 = clahe.apply(img_crop)

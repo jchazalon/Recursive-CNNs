@@ -3,11 +3,11 @@ import numpy as np
 import cv2
 import csv
 import utils
-output_dir = "./multipleBackgroundsCorners"
+output_dir = "/home/khurram/DataGenerator/multipleBackgroundsCorners"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
-dir = "../data1"
+dir = "/home/khurram/DataGenerator/dataNew"
 import csv
 
 with open(output_dir+"/gt.csv", 'a') as csvfile:
@@ -40,9 +40,9 @@ with open(output_dir+"/gt.csv", 'a') as csvfile:
                     # 0/0
                     for angle in range(0,271,90):
                         img_rotate, gt_rotate = utils.rotate(img, gt,angle)
-                        for random_crop in range(0,1):
+                        for random_crop in range(0,32):
                             img_list, gt_list = utils.getCorners(img_rotate, gt_rotate)
                             for a in range(0,4):
-                                cv2.circle(img_list[a], tuple(gt_list[a]), 2,(255,0,0),2)
+                                #cv2.circle(img_list[a], tuple(gt_list[a]), 2,(255,0,0),2)
                                 cv2.imwrite( output_dir+"/"+image + str(angle) +str(random_crop) + str(a) +".jpg", img_list[a])
                                 spamwriter_1.writerow(( image + str(angle) +str(random_crop) + str(a) +".jpg", tuple(gt_list[a])))

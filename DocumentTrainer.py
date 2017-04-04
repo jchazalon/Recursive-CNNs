@@ -8,7 +8,7 @@ import sys
 
 class documentTrainer:
     def __init__(self, model="5"):
-        self.BATCH_SIZE = 500
+        self.BATCH_SIZE = 10
         self.NO_OF_STEPS = 500000
         self.CHECKPOINT_DIR = "../4Pointbg"+model
         self.DATA_DIR = "../../DataSet Generator/data_set"
@@ -18,7 +18,7 @@ class documentTrainer:
 
 
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.20
+        config.gpu_options.per_process_gpu_memory_fraction = 0.01
         self.sess = tf.Session(config=config)
         sess = self.sess
         self.train_gt=train_gt = np.load("../train_gt_bg"+model+".npy")
@@ -161,7 +161,7 @@ class documentTrainer:
             self.mySum=mySum = tf.summary.scalar('Train_loss', cross_entropy)
             self.validate_loss=validate_loss = tf.summary.scalar('Validate_loss', cross_entropy)
         with tf.name_scope("Train"):
-            self.train_step=train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+            self.train_step=train_step = tf.train.AdamOptimizer(7e-5).minimize(cross_entropy)
 
 
         merged = tf.summary.merge_all()
@@ -225,7 +225,7 @@ class documentTrainer:
             if i % 10000== 0 and i != 0:
                 self.saver.save(self.sess, self.CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
             else:
-                a= self.sess.run([self.train_step], feed_dict={self.x: batch, self.y_: gt, self.keep_prob: 0.7})
+                a= self.sess.run([self.train_step], feed_dict={self.x: batch, self.y_: gt, self.keep_prob: 1.0})
 
 
 if __name__ == "__main__":
