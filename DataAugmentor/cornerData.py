@@ -7,7 +7,7 @@ output_dir = "/home/khurram/DataGenerator/multipleBackgroundsCorners"
 if (not os.path.isdir(output_dir)):
     os.mkdir(output_dir)
 
-dir = "/home/khurram/DataGenerator/dataNew"
+dir = "/home/khurram/DataGenerator/data1"
 import csv
 
 with open(output_dir+"/gt.csv", 'a') as csvfile:
