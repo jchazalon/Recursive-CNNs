@@ -15,7 +15,7 @@ TEST_PERCENTAGE = .10
 Debug = True
 size= (32,32)
 
-image_list1, gt_list1, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=-1, size=size,remove_background=int(sys.argv[1]))
+image_list1, gt_list1, file_name = utils.load_data(DATA_DIR, GT_DIR, limit=5, size=size,remove_background=int(sys.argv[1]))
 image_list2, gt_list2, file_name_2 = utils.load_data(DATA_DIR2, GT_DIR2, limit=-1, size=size)
 
 print image_list2.shape

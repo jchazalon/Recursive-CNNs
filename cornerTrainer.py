@@ -7,7 +7,7 @@ import math
 import sys 
 
 BATCH_SIZE = 100
-NO_OF_STEPS = 500000
+NO_OF_STEPS = 50000000
 CHECKPOINT_DIR = "../corner_withoutbg"+str(sys.argv[1])+"all"
 DATA_DIR = "../../corner_data"
 if (not os.path.isdir(CHECKPOINT_DIR)):
@@ -75,7 +75,7 @@ with tf.variable_scope('Corner'):
     # In[ ]:
 
     x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
-    x_ = tf.image.random_contrast(x, lower=0.2, upper=1.8)
+    x_ = tf.image.random_contrast(x, lower=0.1, upper=1.9)
     print x_.get_shape()
     x_ = tf.image.random_brightness(x_, max_delta=50)
     print x_.get_shape()
@@ -183,16 +183,6 @@ for i in range(NO_OF_STEPS):
         loss_mine = cross_entropy.eval(feed_dict={
             x: batch, y_: gt, keep_prob: 1.0})
         print("Loss on Val : ", math.sqrt((loss_mine/BATCH_SIZE)*2))
-        temp_temp = np.random.randint(0,len(validate_image)-1,1)
-        batch = validate_image[temp_temp]
-        gt = validate_gt[temp_temp]
-        response = y_conv.eval(feed_dict={
-            x: batch, y_: gt, keep_prob: 1.0})
-        cv2.circle(batch[0], (response[0][0], response[0][1]), 2, (255,0,0),2)
-        cv2.circle(batch[0], (gt[0][0], gt[0][1]), 2, (0,255,0),2)
-        img = batch[0]
-        img = cv2.resize(img, (320,320))
-        cv2.imwrite("../temp"+str(temp_temp)+".jpg", img)
     if i % 1000 == 0 and i != 0:
         saver.save(sess, CHECKPOINT_DIR + '/model.ckpt', global_step=i + 1)
     else:

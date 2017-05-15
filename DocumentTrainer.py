@@ -8,8 +8,8 @@ import sys
 
 class documentTrainer:
     def __init__(self, model="5"):
-        self.BATCH_SIZE = 10
-        self.NO_OF_STEPS = 500000
+        self.BATCH_SIZE = 100
+        self.NO_OF_STEPS = 50000000
         self.CHECKPOINT_DIR = "../4Pointbg"+model
         self.DATA_DIR = "../../DataSet Generator/data_set"
         if (not os.path.isdir(self.CHECKPOINT_DIR)):
@@ -18,7 +18,7 @@ class documentTrainer:
 
 
         config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.01
+        config.gpu_options.per_process_gpu_memory_fraction = 0.15
         self.sess = tf.Session(config=config)
         sess = self.sess
         self.train_gt=train_gt = np.load("../train_gt_bg"+model+".npy")
@@ -70,8 +70,8 @@ class documentTrainer:
 
 
 
-            x_ = tf.image.random_brightness(x, 5)
-            x_ = tf.image.random_contrast(x_, lower=0.9, upper=1.1)
+            x_ = tf.image.random_brightness(x, 50)
+            x_ = tf.image.random_contrast(x_, lower=0.1, upper=1.9)
         with tf.name_scope("gt"):
             self.y_= y_ = tf.placeholder(tf.float32, shape=[None, 8])
 

@@ -29,7 +29,7 @@ for b in data:
     temp[0]+= b[1]
     temp[1]+= b[2]
     corner_address.append(temp)
-    print temp
+    #print temp
     counter+=1
 
 

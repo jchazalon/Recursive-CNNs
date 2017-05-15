@@ -17,9 +17,9 @@ TEST_PERCENTAGE = .01
 Debug = True
 size = (32,32)
 
-limi = -1
+limi = 5
 image_list1, gt_list1, file_name = utils.load_data_4(DATA_DIR, GT_DIR, limit=limi, size=size,remove_background=int(sys.argv[1]))
-image_list2, gt_list2, file_name_2 = utils.load_data_4(DATA_DIR2, GT_DIR2, limit=limi, size=size)
+image_list2, gt_list2, file_name_2 = utils.load_data_4(DATA_DIR2, GT_DIR2, limit=-1, size=size)
 
 gt_list= np.array(np.append(gt_list1, gt_list2,axis=0))
 image_list= np.array(np.append(image_list1, image_list2, axis=0))
