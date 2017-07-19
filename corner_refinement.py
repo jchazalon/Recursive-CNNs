@@ -116,7 +116,7 @@ class corner_finder():
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         merged = tf.summary.merge_all()
-            
+
         all_vars = tf.GraphKeys.GLOBAL_VARIABLES
         saver = tf.train.Saver( tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Corner'))
         ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
@@ -124,7 +124,7 @@ class corner_finder():
              #print ("PRINTING CHECKPOINT PATH")
              #print(ckpt.model_checkpoint_path)
              init = saver.restore(self.sess, ckpt.model_checkpoint_path)
-        
+
         else:
              #print("Starting from scratch")
              init = tf.global_variables_initializer()
@@ -315,7 +315,7 @@ class corner_finder_aug():
         self.sess = tf.Session(config=config)
 
         train_image = np.load("../train_image_bg1.npy")
-       
+
         mean_train = np.mean(train_image, axis=(0,1,2))
 
         mean_train = np.expand_dims(mean_train, axis=0)
@@ -425,7 +425,7 @@ class corner_finder_aug():
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         merged = tf.summary.merge_all()
-            
+
         all_vars = tf.GraphKeys.GLOBAL_VARIABLES
         saver = tf.train.Saver( tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Corner'))
         ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
@@ -433,7 +433,7 @@ class corner_finder_aug():
              #print ("PRINTING CHECKPOINT PATH")
              #print(ckpt.model_checkpoint_path)
              init = saver.restore(self.sess, ckpt.model_checkpoint_path)
-        
+
         else:
              #print("Starting from scratch")
              init = tf.global_variables_initializer()
@@ -549,12 +549,13 @@ class corner_finder_newBG():
         self.sess = tf.Session(config=config)
 
         train_image = np.load("../train_image_corners_bg"+model+".npy")
-       
+
         mean_train = np.mean(train_image, axis=(0,1,2))
 
         mean_train = np.expand_dims(mean_train, axis=0)
         mean_train = np.expand_dims(mean_train, axis=0)
         self.mean_train = np.expand_dims(mean_train, axis=0)
+        print "Mean Image = ", self.mean_train
          # In[ ]:
 
         def weight_variable(shape, name="temp"):
@@ -659,7 +660,7 @@ class corner_finder_newBG():
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         merged = tf.summary.merge_all()
-            
+
         all_vars = tf.GraphKeys.GLOBAL_VARIABLES
         saver = tf.train.Saver( tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Corner'))
         ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
@@ -667,7 +668,7 @@ class corner_finder_newBG():
              #print ("PRINTING CHECKPOINT PATH")
              #print(ckpt.model_checkpoint_path)
              init = saver.restore(self.sess, ckpt.model_checkpoint_path)
-        
+
         else:
              #print("Starting from scratch")
              init = tf.global_variables_initializer()

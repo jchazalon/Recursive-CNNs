@@ -9,14 +9,14 @@ import getcorners
 import tensorflow as tf
 import utils
 import random
-import sys 
+import sys
 if __name__ == '__main__':
     tf.reset_default_graph()
 
-    
-    
+
+
     corner_e=getcorners.get_corners_moreBG(model=str(sys.argv[2]))
-    #corner_e = getcorners.get_corners_aug()   
+    #corner_e = getcorners.get_corners_aug()
     # model = corner_refinement.corner_finder_aug()
     model = corner_refinement.corner_finder_newBG(model=str(sys.argv[2]))
     dir = "/home/khurram/Dicta_data/"+sys.argv[1]
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ans = []
     ans2 = []
 
-    with open('../bg1_2.csv', 'a') as csvfile:
+    with open('../'+sys.argv[1]+'.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for folder in os.listdir(dir):
@@ -102,17 +102,17 @@ if __name__ == '__main__':
                                     import time
 
                                     result = np.copy(img)
-                                    
+
                                     start = time.clock()
                                     data = corner_e.get(img)
                                     #print time.clock() - start
 
-                                    
+
                                     corner_address = []
                                     import timeit
                                     print "Gets here"
-                                    
-                                
+
+
 
                                     for b in data:
                                         a = b[0]
